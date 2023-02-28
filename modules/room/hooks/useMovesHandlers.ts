@@ -3,7 +3,6 @@ import { useEffect, useMemo } from 'react';
 import { getStringFromRgba } from '@/common/lib/rgba';
 import { socket } from '@/common/lib/socket';
 import { useBackground } from '@/common/recoil/background';
-import { useSetSelection } from '@/common/recoil/options';
 import { useMyMoves, useRoom } from '@/common/recoil/room';
 import { useSetSavedMoves } from '@/common/recoil/savedMoves';
 import { Move } from '@/common/types/global';
@@ -20,7 +19,6 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
   const { addSavedMove, removeSavedMove } = useSetSavedMoves();
   const ctx = useCtx();
   const bg = useBackground();
-  const { clearSelection } = useSetSelection();
 
   const sortedMoves = useMemo(() => {
     const { usersMoves, movesWithoutUser, myMoves } = room;
@@ -66,8 +64,6 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
     if (!ctx || !path.length) return;
 
     const moveOptions = move.options;
-
-    if (moveOptions.mode === 'select') return;
 
     ctx.lineWidth = moveOptions.lineWidth;
     ctx.strokeStyle = getStringFromRgba(moveOptions.lineColor);
@@ -135,13 +131,12 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
     socket.on('your_move', (move) => {
       clearOnYourMove();
       handleAddMyMove(move);
-      setTimeout(clearSelection, 100);
     });
 
     return () => {
       socket.off('your_move');
     };
-  }, [clearOnYourMove, clearSelection, handleAddMyMove]);
+  }, [clearOnYourMove, handleAddMyMove]);
 
   useEffect(() => {
     if (prevMovesLength >= sortedMoves.length || !prevMovesLength) {
@@ -164,8 +159,7 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
     if (ctx) {
       const move = handleRemoveMyMove();
 
-      if (move?.options.mode === 'select') clearSelection();
-      else if (move) {
+      if (move) {
         addSavedMove(move);
         socket.emit('undo');
       }

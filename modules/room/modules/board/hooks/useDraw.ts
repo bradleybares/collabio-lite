@@ -6,8 +6,6 @@ import { getPos } from '@/common/lib/getPos';
 import { getStringFromRgba } from '@/common/lib/rgba';
 import { socket } from '@/common/lib/socket';
 import { useOptionsValue } from '@/common/recoil/options';
-import { useSetSelection } from '@/common/recoil/options/options.hooks';
-import { useMyMoves } from '@/common/recoil/room';
 import { useSetSavedMoves } from '@/common/recoil/savedMoves';
 import { Move } from '@/common/types/global';
 
@@ -24,8 +22,6 @@ export const useDraw = (blocked: boolean) => {
   const options = useOptionsValue();
   const boardPosition = useBoardPosition();
   const { clearSavedMoves } = useSetSavedMoves();
-  const { handleAddMyMove } = useMyMoves();
-  const { setSelection, clearSelection } = useSetSelection();
   const vw = useViewportSize();
 
   const movedX = boardPosition.x;
@@ -67,7 +63,7 @@ export const useDraw = (blocked: boolean) => {
     setupCtxOptions();
     drawAndSet();
 
-    if (options.shape === 'line' && options.mode !== 'select') {
+    if (options.shape === 'line') {
       ctx.beginPath();
       ctx.lineTo(finalX, finalY);
       ctx.stroke();
@@ -82,16 +78,6 @@ export const useDraw = (blocked: boolean) => {
     const [finalX, finalY] = [getPos(x, movedX), getPos(y, movedY)];
 
     drawAndSet();
-
-    if (options.mode === 'select') {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      drawRect(ctx, tempMoves[0], finalX, finalY, false, true);
-      tempMoves.push([finalX, finalY]);
-
-      setupCtxOptions();
-
-      return;
-    }
 
     switch (options.shape) {
       case 'line':
@@ -127,37 +113,6 @@ export const useDraw = (blocked: boolean) => {
 
     ctx.closePath();
 
-    let addMove = true;
-    if (options.mode === 'select' && tempMoves.length) {
-      clearOnYourMove();
-      let x = tempMoves[0][0];
-      let y = tempMoves[0][1];
-      let width = tempMoves[tempMoves.length - 1][0] - x;
-      let height = tempMoves[tempMoves.length - 1][1] - y;
-
-      if (width < 0) {
-        width -= 4;
-        x += 2;
-      } else {
-        width += 4;
-        x -= 2;
-      }
-      if (height < 0) {
-        height -= 4;
-        y += 2;
-      } else {
-        height += 4;
-        y -= 2;
-      }
-
-      if ((width < 4 || width > 4) && (height < 4 || height > 4))
-        setSelection({ x, y, width, height });
-      else {
-        clearSelection();
-        addMove = false;
-      }
-    }
-
     const move: Move = {
       ...DEFAULT_MOVE,
       rect: {
@@ -174,10 +129,8 @@ export const useDraw = (blocked: boolean) => {
     tempCircle = { cX: 0, cY: 0, radiusX: 0, radiusY: 0 };
     tempSize = { width: 0, height: 0 };
 
-    if (options.mode !== 'select') {
-      socket.emit('draw', move);
-      clearSavedMoves();
-    } else if (addMove) handleAddMyMove(move);
+    socket.emit('draw', move);
+    clearSavedMoves();
   };
 
   return {

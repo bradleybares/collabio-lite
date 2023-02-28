@@ -23,7 +23,7 @@ const ColorPicker = () => {
       <button
         className="btn-icon"
         onClick={() => setOpened(!opened)}
-        disabled={options.mode === 'select'}
+        disabled={options.mode === 'eraser'}
       >
         <BsPaletteFill />
       </button>

@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { roomContext } from '../context/Room.context';
 
 export const useRefs = () => {
-  const { undoRef, bgRef, canvasRef, minimapRef, redoRef, selectionRefs } =
+  const { undoRef, bgRef, canvasRef, minimapRef, redoRef } =
     useContext(roomContext);
 
   return {
@@ -12,6 +12,5 @@ export const useRefs = () => {
     bgRef,
     canvasRef,
     minimapRef,
-    selectionRefs,
   };
 };

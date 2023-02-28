@@ -99,12 +99,6 @@ export const useMyMoves = () => {
 
   const handleAddMyMove = (move: Move) => {
     setRoom((prev) => {
-      if (prev.myMoves[prev.myMoves.length - 1]?.options.mode === 'select')
-        return {
-          ...prev,
-          myMoves: [...prev.myMoves.slice(0, prev.myMoves.length - 1), move],
-        };
-
       return { ...prev, myMoves: [...prev.myMoves, move] };
     });
   };
