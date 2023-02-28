@@ -16,7 +16,6 @@ import ShareModal from '../modals/ShareModal';
 import BackgroundPicker from './BackgoundPicker';
 import ColorPicker from './ColorPicker';
 import HistoryBtns from './HistoryBtns';
-import ImagePicker from './ImagePicker';
 import LineWidthPicker from './LineWidthPicker';
 import ModePicker from './ModePicker';
 import ShapeSelector from './ShapeSelector';
@@ -86,7 +85,6 @@ const ToolBar = () => {
         <ColorPicker />
         <LineWidthPicker />
         <ModePicker />
-        <ImagePicker />
 
         <div className="2xl:hidden"></div>
         <div className="h-px w-full bg-white 2xl:hidden" />

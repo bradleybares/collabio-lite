@@ -1,13 +1,4 @@
-import {
-  createContext,
-  Dispatch,
-  ReactChild,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, ReactChild, RefObject, useEffect, useRef } from 'react';
 
 import { MotionValue, useMotionValue } from 'framer-motion';
 import { toast } from 'react-toastify';
@@ -27,14 +18,6 @@ export const roomContext = createContext<{
   bgRef: RefObject<HTMLCanvasElement>;
   selectionRefs: RefObject<HTMLButtonElement[]>;
   minimapRef: RefObject<HTMLCanvasElement>;
-  moveImage: { base64: string; x?: number; y?: number };
-  setMoveImage: Dispatch<
-    SetStateAction<{
-      base64: string;
-      x?: number | undefined;
-      y?: number | undefined;
-    }>
-  >;
 }>(null!);
 
 const RoomContextProvider = ({ children }: { children: ReactChild }) => {
@@ -48,17 +31,6 @@ const RoomContextProvider = ({ children }: { children: ReactChild }) => {
   const bgRef = useRef<HTMLCanvasElement>(null);
   const minimapRef = useRef<HTMLCanvasElement>(null);
   const selectionRefs = useRef<HTMLButtonElement[]>([]);
-
-  const [moveImage, setMoveImage] = useState<{
-    base64: string;
-    x?: number;
-    y?: number;
-  }>({ base64: '' });
-
-  useEffect(() => {
-    if (moveImage.base64 && !moveImage.x && !moveImage.y)
-      setMoveImage({ base64: moveImage.base64, x: 50, y: 50 });
-  }, [moveImage]);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -125,8 +97,6 @@ const RoomContextProvider = ({ children }: { children: ReactChild }) => {
         undoRef,
         redoRef,
         canvasRef,
-        setMoveImage,
-        moveImage,
         minimapRef,
         selectionRefs,
       }}

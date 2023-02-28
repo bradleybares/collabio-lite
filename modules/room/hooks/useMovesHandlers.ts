@@ -10,7 +10,6 @@ import { Move } from '@/common/types/global';
 
 import { useCtx } from '../modules/board/hooks/useCtx';
 import { useRefs } from './useRefs';
-import { useSelection } from '../modules/board/hooks/useSelection';
 
 let prevMovesLength = 0;
 
@@ -61,7 +60,7 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => copyCanvasToSmall(), [bg]);
 
-  const drawMove = (move: Move, image?: HTMLImageElement) => {
+  const drawMove = (move: Move) => {
     const { path } = move;
 
     if (!ctx || !path.length) return;
@@ -76,9 +75,6 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
     if (moveOptions.mode === 'eraser')
       ctx.globalCompositeOperation = 'destination-out';
     else ctx.globalCompositeOperation = 'source-over';
-
-    if (moveOptions.shape === 'image' && image)
-      ctx.drawImage(image, path[0][0], path[0][1]);
 
     switch (moveOptions.shape) {
       case 'line': {
@@ -128,30 +124,12 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    const images = await Promise.all(
-      sortedMoves
-        .filter((move) => move.options.shape === 'image')
-        .map((move) => {
-          return new Promise<HTMLImageElement>((resolve) => {
-            const img = new Image();
-            img.src = move.img.base64;
-            img.id = move.id;
-            img.addEventListener('load', () => resolve(img));
-          });
-        })
-    );
-
     sortedMoves.forEach((move) => {
-      if (move.options.shape === 'image') {
-        const img = images.find((image) => image.id === move.id);
-        if (img) drawMove(move, img);
-      } else drawMove(move);
+      drawMove(move);
     });
 
     copyCanvasToSmall();
   };
-
-  useSelection(drawAllMoves);
 
   useEffect(() => {
     socket.on('your_move', (move) => {
@@ -171,11 +149,7 @@ export const useMovesHandlers = (clearOnYourMove: () => void) => {
     } else {
       const lastMove = sortedMoves[sortedMoves.length - 1];
 
-      if (lastMove.options.shape === 'image') {
-        const img = new Image();
-        img.src = lastMove.img.base64;
-        img.addEventListener('load', () => drawMove(lastMove, img));
-      } else drawMove(lastMove);
+      drawMove(lastMove);
     }
 
     return () => {

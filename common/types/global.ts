@@ -1,6 +1,6 @@
 import { RgbaColor } from 'react-colorful';
 
-export type Shape = 'line' | 'circle' | 'rect' | 'image';
+export type Shape = 'line' | 'circle' | 'rect';
 export type CtxMode = 'eraser' | 'draw' | 'select';
 
 export interface CtxOptions {
