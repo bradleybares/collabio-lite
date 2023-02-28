@@ -7,7 +7,6 @@ Real-time whiteboard made with Next.JS and Socket.IO
 - Eraser
 - Undo/Redo
 - Real-time mouse tracking
-- Chatting
 - Placing images
 - Saving canvas
 - Changing backgrounds
